@@ -17,6 +17,8 @@ let currentWord = null;
 let timer = null;
 let timeLeft = 30;
 
+let gameModes = [];
+
 /* ========= УТИЛИТЫ ========= */
 
 function shuffle(arr) {
@@ -44,6 +46,15 @@ function enableEnterNavigation(inputs, submitButton) {
     inputs[0]?.focus();
 }
 
+/* ========= ПРАВИЛА ========= */
+
+const rules = {
+    words: "Объясняйте словами",
+    gestures: "Объясняйте жестами",
+    oneword: "Объясняйте одним словом",
+    phrases: "Объясняйте фразами",
+    yoga: "Объясняйте йогой"
+};
 
 /* ========= СТАРТ ========= */
 
@@ -51,68 +62,36 @@ function init() {
     output.innerHTML = `
         <p>Количество игроков (минимум 3):</p>
         <input id="numP" type="number">
-        <button onclick="setPlayers()">OK</button>
+        <p>Сколько слов на игрока?</p>
+        <input id="wp" type="number" value="10">
+        <p>Дополнительные режимы:</p>
+        <label><input type="checkbox" id="canWeSkip"> Можно пропускать имена?</label><br>
+        <label><input type="checkbox" id="modeY"> Й</label><br>
+        <button onclick="setGame()">OK</button>
     `;
 }
 
-function setPlayers() {
+function setGame() {
     numPlayers = +document.getElementById("numP").value;
     if (numPlayers < 3) {
         alert("Минимум 3 игрока");
         return;
     }
 
-    output.innerHTML = `
-        <p>Сколько слов на игрока?</p>
-        <input id="wp" type="number" value="10">
-        <button onclick="setWordsCount()">OK</button>
-    `;
-}
-
-function setWordsCount() {
     wordsPerPlayer = +document.getElementById("wp").value;
     if (wordsPerPlayer < 1) {
         alert("Число должно быть положительным");
         return;
     }
-    collectPlayers();
-}
 
-/* ========= ИГРОКИ ========= */
+    const modeF = document.getElementById("modeF").checked;
+    const modeY = document.getElementById("modeY").checked;
 
-function collectPlayers() {
-    output.innerHTML = "<h2>Введите имена игроков</h2>";
+    gameModes = ['words', 'gestures', 'oneword'];
+    if (modeF) gameModes.push('phrases');
+    if (modeY) gameModes.push('yoga');
 
-    for (let i = 0; i < numPlayers; i++) {
-        output.innerHTML += `
-            <input id="player${i}" placeholder="Игрок ${i + 1}"><br>
-        `;
-    }
-
-    output.innerHTML += `<button id="submitPlayers">Далее</button>`;
-
-    const inputs = [];
-    for (let i = 0; i < numPlayers; i++) {
-        inputs.push(document.getElementById(`player${i}`));
-    }
-
-    const btn = document.getElementById("submitPlayers");
-    btn.onclick = savePlayers;
-
-    enableEnterNavigation(inputs, btn);
-}
-
-
-function savePlayers() {
-    players = [];
-    for (let i = 0; i < numPlayers; i++) {
-        const name = document.getElementById(`player${i}`).value.trim();
-        if (!name) {
-            alert("Заполните все имена");
-            return;
-        }
-        players.push(name);
-    }
+    players = Array.from({length: numPlayers}, (_, i) => `Игрок ${i+1}`);
     scores = Array(numPlayers).fill(0);
     collectWords(0);
 }
@@ -126,14 +105,11 @@ function collectWords(playerIndex) {
     }
 
     const playerName = players[playerIndex];
-    if (!playerName) {
-        console.error("Ошибка: игрок не найден", playerIndex);
-        startRound(1);
-        return;
-    }
 
     output.innerHTML = `
-        <h2>${playerName}, введи ${wordsPerPlayer} слов</h2>
+        <h2>Игрок ${playerIndex + 1}</h2>
+        <p>Имя:</p>
+        <input id="playerName" value="${playerName}">
     `;
 
     for (let i = 0; i < wordsPerPlayer; i++) {
@@ -144,7 +120,7 @@ function collectWords(playerIndex) {
 
     output.innerHTML += `<br><button id="submitWords">Далее</button>`;
 
-    const inputs = [];
+    const inputs = [document.getElementById("playerName")];
     for (let i = 0; i < wordsPerPlayer; i++) {
         inputs.push(document.getElementById(`word${i}`));
     }
@@ -155,9 +131,14 @@ function collectWords(playerIndex) {
     enableEnterNavigation(inputs, btn);
 }
 
-
-
 function saveWords(playerIndex) {
+    const name = document.getElementById("playerName").value.trim();
+    if (!name) {
+        alert("Введите имя игрока");
+        return;
+    }
+    players[playerIndex] = name;
+
     for (let i = 0; i < wordsPerPlayer; i++) {
         const w = document.getElementById(`word${i}`).value.trim();
         if (!w) {
@@ -177,16 +158,16 @@ function startRound(round) {
     hat = [...words];
     shuffle(hat);
 
-    const rules = [
-        "",
-        "Объясняйте словами",
-        "Объясняйте жестами",
-        "Объясняйте одним словом"
-    ];
+    if (round > gameModes.length) {
+        showScores();
+        return;
+    }
+
+    const mode = gameModes[round - 1];
 
     output.innerHTML = `
         <h2>Раунд ${round}</h2>
-        <p>${rules[round]}</p>
+        <p>${rules[mode]}</p>
         <button onclick="waitNextPlayer()">Начать раунд</button>
     `;
 }
@@ -277,10 +258,10 @@ function endTurn() {
 
 function endRound() {
     clearInterval(timer);
-    if (currentRound < 3) {
-        startRound(currentRound + 1);
-    } else {
+    if (currentRound >= gameModes.length) {
         showScores();
+    } else {
+        startRound(currentRound + 1);
     }
 }
 
