@@ -84,7 +84,7 @@ function setGame() {
         return;
     }
 
-    const modeF = document.getElementById("modeF").checked;
+    const modeF = document.getElementById("canWeSkip").checked;
     const modeY = document.getElementById("modeY").checked;
 
     gameModes = ['words', 'gestures', 'oneword'];
@@ -108,8 +108,13 @@ function collectWords(playerIndex) {
 
     output.innerHTML = `
         <h2>Игрок ${playerIndex + 1}</h2>
-        <p>Имя:</p>
-        <input id="playerName" value="${playerName}">
+        <div class="name-input">
+            <p>Имя:</p>
+            <input id="playerName" value="${playerName}">
+        </div>
+        <hr>
+        <div class="words-input">
+            <p>Введите ${wordsPerPlayer} слов</p>
     `;
 
     for (let i = 0; i < wordsPerPlayer; i++) {
@@ -118,7 +123,10 @@ function collectWords(playerIndex) {
         `;
     }
 
-    output.innerHTML += `<br><button id="submitWords">Далее</button>`;
+    output.innerHTML += `
+        </div>
+        <br><button id="submitWords">Далее</button>
+    `;
 
     const inputs = [document.getElementById("playerName")];
     for (let i = 0; i < wordsPerPlayer; i++) {
@@ -183,6 +191,7 @@ function beginTurn() {
     timeLeft = 30;
 
     const guesser = (currentExplainer + 1) % numPlayers;
+    const canSkip = document.getElementById("canWeSkip")?.checked;
 
     output.innerHTML = `
         <p>
@@ -192,12 +201,13 @@ function beginTurn() {
         <h1 id="word"></h1>
         <p>⏱ <span id="timer">30</span> сек</p>
         <button onclick="guessed()">✔ Отгадано</button>
-        <button onclick="skipped()">✖ Пропуск</button>
+        ${canSkip ? `<button onclick="skipped()">✖ Пропуск</button>` : ""}
     `;
 
     nextWord();
     timer = setInterval(tick, 1000);
 }
+
 
 function tick() {
     timeLeft--;

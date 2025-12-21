@@ -33,7 +33,49 @@ body {
 }
 
 .header {
-    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-dark-purple), var(--bg-panel));
+    padding: 1.5rem;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    margin-bottom: 1rem;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: var(--text-light);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    flex: 0 0 auto;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    flex: 0 0 auto;
+}
+
+.links a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.links p {
+    margin: 0;
 }
 
 .container {
@@ -150,4 +192,12 @@ button {
 
 button span.icon {
     line-height: 1;
+}
+
+.name-input {
+    margin-bottom: 1rem;
+}
+
+.words-input {
+    margin-top: 1rem;
 }
