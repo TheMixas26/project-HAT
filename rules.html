@@ -5,20 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Правила игры «Шляпа»</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById("gameSelect");
+            const cards = document.querySelectorAll(".rules-card");
+
+            select.addEventListener("change", () => {
+                cards.forEach(card => {
+                    card.hidden = card.dataset.game !== select.value;
+                });
+            });
+        });
+    </script>
+
 </head>
 
 <body>
     <header class="header">
         <h1>📜 Правила игры «Шляпа»</h1>
+        
+        <select id="gameSelect">
+            <option value="hat" selected>Шляпа</option>
+            <option value="whoami">Кто я?</option>
+        </select>
+
+
     </header>
 
     <main class="container">
-        <p class="intro">
-            Игра состоит из трёх раундов. В каждом раунде одни и те же слова
-            объясняются по новым правилам. Чем дальше - тем сложнее, но ведь и веселее!.
-        </p>
+        <section id="hat-rules" class="rules-card" data-game="hat">
+            <p class="intro">
+                Игра состоит из трёх раундов. В каждом раунде одни и те же слова
+                объясняются по новым правилам. Чем дальше - тем сложнее, но ведь и веселее!.
+            </p>
+        </section>
 
-        <section class="rules-card">
+        <section class="rules-card" data-game="hat">
             <h2>Раунд 1 — Слова</h2>
             <ul>
                 <li>Объясняйте слова <strong>только другими словами</strong>.</li>
@@ -29,7 +52,7 @@
             </ul>
         </section>
 
-        <section class="rules-card">
+        <section class="rules-card" data-game="hat">
             <h2>Раунд 2 — Жесты</h2>
             <ul>
                 <li>Объясняйте слова <strong>только жестами</strong>.</li>
@@ -39,7 +62,7 @@
             </ul>
         </section>
 
-        <section class="rules-card">
+        <section class="rules-card" data-game="hat">
             <h2>Раунд 3 — Одно слово</h2>
             <ul>
                 <li>Можно использовать <strong>только одно слово</strong>.</li>
@@ -48,6 +71,21 @@
                 <li>Все правила предыдущих раундов сохраняются.</li>
             </ul>
         </section>
+
+
+
+        <section class="rules-card" data-game="whoami" hidden>
+            <h2>Угадай, кто ты</h2>
+            <ul>
+                <li>Каждому игроку тайно назначается слово, которое он не видит.</li>
+                <li>Игроки по очереди задают вопросы, чтобы угадать своё слово.</li>
+                <li>Вопросы должны быть такими, чтобы на них можно было ответить "да" или "нет".</li>
+                <li>Игроки могут обсуждать и помогать друг другу.</li>
+                <li>Игра продолжается, пока все игроки не угадают свои слова.</li>
+            </ul>
+        </section>
+
+
         <p class="intro">
             Удачи и весёлой игры!<br>
             Вернуться на <a href="index.html">главную страницу</a>.
