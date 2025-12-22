@@ -64,9 +64,17 @@ function init() {
         <input id="numP" type="number">
         <p>Сколько слов на игрока?</p>
         <input id="wp" type="number" value="10">
-        <p>Дополнительные режимы:</p>
-        <label><input type="checkbox" id="canWeSkip"> Можно пропускать имена?</label><br>
-        <label><input type="checkbox" id="modeY"> Й</label><br>
+        <div class="checkbox-group">
+            <p>Дополнительные режимы:</p>
+            <label class="checkbox">
+                <input type="checkbox" id="canWeSkip">
+                <span class="checkbox-label">Можно пропускать имена?</span>
+            </label>
+            <label class="checkbox">
+                <!-- <input type="checkbox" id="modeY">
+                <span class="checkbox-label">Включить режим "Йога"</span> -->
+            </label>
+        </div>
         <button onclick="setGame()">OK</button>
     `;
 }
@@ -83,13 +91,16 @@ function setGame() {
         alert("Число должно быть положительным");
         return;
     }
-
-    const modeF = document.getElementById("canWeSkip").checked;
-    const modeY = document.getElementById("modeY").checked;
+    
+    var canSkip = document.getElementById("canWeSkip")?.checked;
+    console.log(canSkip)
+    window.gameVaribles ={
+        canSkip: canSkip
+    }
+    // const modeY = document.getElementById("modeY").checked;
 
     gameModes = ['words', 'gestures', 'oneword'];
-    if (modeF) gameModes.push('phrases');
-    if (modeY) gameModes.push('yoga');
+    // if (modeY) gameModes.push('yoga');
 
     players = Array.from({length: numPlayers}, (_, i) => `Игрок ${i+1}`);
     scores = Array(numPlayers).fill(0);
@@ -191,7 +202,9 @@ function beginTurn() {
     timeLeft = 30;
 
     const guesser = (currentExplainer + 1) % numPlayers;
-    const canSkip = document.getElementById("canWeSkip")?.checked;
+    // const canSkip = document.getElementById("canWeSkip").checked;
+    console.log("CanSkip:", globalThis.canSkip);
+    
 
     output.innerHTML = `
         <p>
@@ -201,7 +214,7 @@ function beginTurn() {
         <h1 id="word"></h1>
         <p>⏱ <span id="timer">30</span> сек</p>
         <button onclick="guessed()">✔ Отгадано</button>
-        ${canSkip ? `<button onclick="skipped()">✖ Пропуск</button>` : ""}
+        ${gameVaribles.canSkip ? `<button onclick="skipped()">✖ Пропуск</button>` : ""}
     `;
 
     nextWord();
